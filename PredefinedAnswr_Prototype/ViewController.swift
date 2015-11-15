@@ -28,17 +28,22 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var input:UITextField!
     var output:UILabel!
     var inputBorder:UIView!
+    var lButton:UIButton!
+    var rButton:UIButton!
+    
+    var buttonArray = [UIButton!]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         //Creates questions
         question1 = Question(title: "What's your name?", acceptedAnswers:[""])
-        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female","Boy","Girl"])
+        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"])
         question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"])
         
         //Adds questions to questions array
         questions += [question1,question2,question3]
+        
         
         
         //Sets default active question to Q1
@@ -70,10 +75,27 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         input.delegate = self
         view.addSubview(input)
         
-        //        var inputBorder = UIView(frame: CGRectMake(20, screenHeight/2-74, screenWidth-40, 1))
-        //        inputBorder.backgroundColor = UIColor.lightGrayColor()
-        //        view.addSubview(inputBorder)
+        lButton = UIButton(frame: CGRectMake(10, 400, screenWidth/2-15, 50))
+        lButton.backgroundColor = UIColor.blackColor()
+        lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
+        lButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
+        lButton.setTitleColor(UIColor.greenColor(), forState: UIControlState.Normal)
+        lButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
+        lButton.layer.borderWidth = 1.0
+        lButton.layer.borderColor = (UIColor.greenColor().CGColor)
         
+        rButton = UIButton(frame: CGRectMake(screenWidth/2+5, 400, screenWidth/2-15, 50))
+        rButton.backgroundColor = UIColor.blackColor()
+        rButton.setTitle(question2.acceptedAnswers[1], forState: UIControlState.Normal)
+        rButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
+        rButton.setTitleColor(UIColor.greenColor(), forState: UIControlState.Normal)
+        rButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
+        rButton.layer.borderWidth = 1.0
+        rButton.layer.borderColor = (UIColor.greenColor().CGColor)
+        
+        buttonArray += [lButton,rButton]
+        print(buttonArray[0])
+        print(buttonArray[1])
         
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
@@ -83,12 +105,24 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         view.backgroundColor = UIColor.blackColor()
     }
     
+    func questionHandler(sender: UIButton!){
+        
+        if sender == buttonArray[0] {
+            print("male")
+        } else if sender == buttonArray[1] {
+            print("female")
+        }
+    }
+    
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if activeQuestion == questions[0] { //If activeQuestion is Q1
             if input.text != "" { //If the user types something as their name
                 name = input.text //Saves the name to var: name
                 question2.title = "Hello, \(name). Gender scan failed, please manually input your gender." //Changes Q2.title to include var: name
                 input.text = nil //Clears input.text, setting up for Q2
+                input.removeFromSuperview()
+                view.addSubview(lButton)
+                view.addSubview(rButton)
                 activeQuestion = questions[1] //Moves the activeQuestion on to Q2
                 output.text = activeQuestion.title //Changes output.text to display Q2.title
                 //     output.sizeToFit()
@@ -99,61 +133,64 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
                 input.text = nil //Clears text field
             }
             return true
+    }
+        
+    
             
-        } else if activeQuestion == questions[1] { //Or if activeQuestion is Q2
-            if let index = question2.acceptedAnswers.indexOf(input.text!) { //Checks if input.text = any accepted answer of Q2
-                gender = question2.acceptedAnswers[index] //Saves the selected gender to var: gender
-                question3.title = "Gender: '\(gender)' saved. Is your current location your home?"
-                input.text = nil
-                activeQuestion = questions[2]
-                output.text = activeQuestion.title
-                
-                print(name,", ", gender)
-            } else { //If input.text doesn't = any accepted answer of Q2
-                let ac = UIAlertController(title: "I'm sorry, I don't understand that.", message: "Accepted answers: Male, Female, Boy, Girl", preferredStyle: .Alert)
-                ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
-                presentViewController(ac, animated: true, completion: nil)
-                input.text = nil //Clears text field
-            }
-            return true
+    if activeQuestion == questions[1] { //If activeQuestion is Q2
+        if let index = question2.acceptedAnswers.indexOf(input.text!) { //Checks if input.text = any accepted answer of Q2
+            gender = question2.acceptedAnswers[index] //Saves the selected gender to var: gender
+            question3.title = "Gender: '\(gender)' saved. Is your current location your home?"
+            input.text = nil
+            activeQuestion = questions[2]
+            output.text = activeQuestion.title
             
-        } else if activeQuestion == questions[2] {
-            if input.text == question3.acceptedAnswers[0] {
-                if let location = locationManager.location { //This func and closure convertlocation from CLLocation to CLPlacemark, so it's readable
-                    reverseGeocode(location, completion: { (returnedLocation:CLPlacemark) in
-                        
-                        self.homeLocation = returnedLocation
-                        
-                        print(returnedLocation)
-                        print(returnedLocation.name)
-                        print(returnedLocation.country)
-                        
-                        let ac = UIAlertController(title: "Home Location", message: "Home location set to \(returnedLocation.name!), \(returnedLocation.thoroughfare!), \(returnedLocation.postalCode!), \(returnedLocation.country!).", preferredStyle: .Alert)
-                        ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                        self.presentViewController(ac, animated: true, completion: nil)
-                        
-                    })
-                    
-                    
-                }
-                
-                input.text = nil
-                output.text = "End of prototype"
-                input.enabled = false
-                //   input.removeFromSuperview() //
-                input.attributedPlaceholder =  NSAttributedString(string: "System Disabled, Contact Admin ", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
-                
-                
-            } else if input.text == question3.acceptedAnswers[1] || input.text != question3.acceptedAnswers[0] || input.text != question3.acceptedAnswers[1] {
-                let ac = UIAlertController(title: "Have you enabled Location Services?", message: "I won't tell the NSA where you are, I promise.", preferredStyle: .Alert)
-                ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                presentViewController(ac, animated: true, completion: nil)
-                input.text = nil //Clears text field
-            }
-            
-            
+            print(name,", ", gender)
+        } else { //If input.text doesn't = any accepted answer of Q2
+            let ac = UIAlertController(title: "I'm sorry, I don't understand that.", message: "Accepted answers: Male, Female, Boy, Girl", preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
+            presentViewController(ac, animated: true, completion: nil)
+            input.text = nil //Clears text field
         }
         return true
+        
+    } else if activeQuestion == questions[2] {
+        if input.text == question3.acceptedAnswers[0] {
+            if let location = locationManager.location { //This func and closure convertlocation from CLLocation to CLPlacemark, so it's readable
+                reverseGeocode(location, completion: { (returnedLocation:CLPlacemark) in
+                    
+                    self.homeLocation = returnedLocation
+                    
+                    print(returnedLocation)
+                    print(returnedLocation.name)
+                    print(returnedLocation.country)
+                    
+                    let ac = UIAlertController(title: "Home Location", message: "Home location set to \(returnedLocation.name!), \(returnedLocation.thoroughfare!), \(returnedLocation.postalCode!), \(returnedLocation.country!).", preferredStyle: .Alert)
+                    ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+                    self.presentViewController(ac, animated: true, completion: nil)
+                    
+                })
+                
+                
+            }
+            
+            input.text = nil
+            output.text = "End of prototype"
+            input.enabled = false
+            //   input.removeFromSuperview() //
+            input.attributedPlaceholder =  NSAttributedString(string: "System Disabled, Contact Admin ", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
+            
+            
+        } else if input.text == question3.acceptedAnswers[1] || input.text != question3.acceptedAnswers[0] || input.text != question3.acceptedAnswers[1] {
+            let ac = UIAlertController(title: "Have you enabled Location Services?", message: "I won't tell the NSA where you are, I promise.", preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+            presentViewController(ac, animated: true, completion: nil)
+            input.text = nil //Clears text field
+        }
+        
+        
+    }
+    return true
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
