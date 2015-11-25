@@ -159,29 +159,12 @@ func questionHandler(question: Question) {
     }
     answersHandler()
 }
-    
-func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
-    return true
-}
-    
-
-func answersHandler()
-{
+ 
+func answersHandler(){
     if activeQuestion.needsKeyboard {
             if  activeQuestion.acceptedAnswers == nil {
-                // check for accepted answer
-                //Run the textFieldShouldReturn func
-            }
-            
-            if input.text != "" {
-                
-                name = input.text //Saves the name to var: name
-                ++questionIndex
-                input.text = nil //Clears text field
-                view.endEditing(true)
-                questionHandler(activeQuestion)
-                
-            } else {
+                nameSubmit = true
+            }else {
                 let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
                 ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
                 presentViewController(ac, animated: true, completion: nil)
@@ -190,13 +173,21 @@ func answersHandler()
         
     }
 }
-        
-            
-       // 1: Check if Question needs keybard or buttons. Find what the active question is, and assign the output.text property to display the appropriate title. Set up the buttons/input to accept that questions accepted answers. Once the enter key is pressed, or once a button is pressed, log the answer and proceed to the next question in sequence.
-        
-        
-
     
+    
+func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
+    if nameSubmit == true {
+        name = input.text //Saves the name to var: name
+        print(name)
+        ++questionIndex
+        input.text = nil //Clears text field
+        view.endEditing(true)
+        questionHandler(activeQuestion)
+        
+        return true
+    }
+    return false
+}
     
 //    func textFieldShouldReturn(textField: UITextField) -> Bool {
 //        if activeQuestion == questions[0] { //If activeQuestion is Q1
