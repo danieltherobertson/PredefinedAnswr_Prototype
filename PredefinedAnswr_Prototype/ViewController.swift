@@ -165,10 +165,7 @@ func answersHandler(){
             if  activeQuestion.acceptedAnswers == nil {
                 nameSubmit = true
             }else {
-                let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
-                ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
-                presentViewController(ac, animated: true, completion: nil)
-                input.text = nil //Clears text field
+                
             }
         
     }
@@ -177,16 +174,21 @@ func answersHandler(){
     
 func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
     if nameSubmit == true {
-        name = input.text //Saves the name to var: name
-        print(name)
-        ++questionIndex
-        input.text = nil //Clears text field
-        view.endEditing(true)
-        questionHandler(activeQuestion)
-        
-        return true
+        if nameSubmit == true && input.text == "" || input.text!.containsString(" ") {
+            let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
+            presentViewController(ac, animated: true, completion: nil)
+            input.text = nil //Clears text field
+        } else if input.text != "" {
+            name = input.text //Saves the name to var: name
+            print("Name is set to '\(name)'")
+            ++questionIndex
+            input.text = nil //Clears text field
+            view.endEditing(true)
+            questionHandler(activeQuestion)
+        }
     }
-    return false
+    return true
 }
     
 //    func textFieldShouldReturn(textField: UITextField) -> Bool {
