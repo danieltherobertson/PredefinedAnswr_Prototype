@@ -10,14 +10,16 @@ import Foundation
 class Question:NSObject {
     
     var title: String!
-    var acceptedAnswers: [String]
+    var acceptedAnswers: [String]?
+    var needsKeyboard: Bool
+    var wilBeSaved: Bool
     
-    
-    init(title:String, acceptedAnswers:[String]) {
+    init(title:String, acceptedAnswers:[String]?, needsKeyboard: Bool, willBeSaved: Bool) {
         
         self.title = title
         self.acceptedAnswers = acceptedAnswers
-        
+        self.needsKeyboard = needsKeyboard
+        self.wilBeSaved = willBeSaved
         super.init()
     }
 }

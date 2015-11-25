@@ -14,18 +14,20 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     let screenWidth = UIScreen.mainScreen().bounds.size.width
     let screenHeight = UIScreen.mainScreen().bounds.size.height
     var questions = [Question]()
-    var activeQuestion: Question!
+    var activeQuestion: Question {return questions[questionIndex]} //Setting activeQuestion to be the questionIndex position in the array, so that starts as array index 0, so the first question is the default activeQuestion
     var questionIndex = 0
     
     var question1:Question!
     var question2:Question!
     var question3:Question!
+    var question4:Question!
     
     var name:String!
     var gender:String!
     var homeLocation:CLPlacemark?
     
     var input:UITextField!
+    var nameSubmit:Bool!
     var output:UILabel!
     var inputBorder:UIView!
     var lButton:UIButton!
@@ -37,21 +39,22 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         super.viewDidLoad()
         
         //Creates questions
-        question1 = Question(title: "What's your name?", acceptedAnswers:[""])
-        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"])
-        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"])
+        question1 = Question(title: "What's your name?", acceptedAnswers:nil, needsKeyboard: true, willBeSaved: true)
+        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], needsKeyboard: false, willBeSaved: true)
+        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], needsKeyboard: false, willBeSaved: true)
+        question4 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], needsKeyboard: false, willBeSaved: false)
         
         //Adds questions to questions array
-        questions += [question1,question2,question3]
+        questions += [question1,question2,question3,question4]
         
         
         
         //Sets default active question to Q1
-        activeQuestion = questions[0]
+        //activeQuestion = questions[0]
         
         
         //Draw content+layout
-        output = PaddedLabel(frame:CGRectMake(10, 270, screenWidth-20, 100))
+        output = PaddedLabel(frame:CGRect(x: 10, y: 270, width: screenWidth-20, height: 100))
         output.text = activeQuestion.title
         output.font = UIFont(name: "Menlo-Regular", size: 16)
         output.textColor = UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 1.0)
@@ -61,7 +64,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         output.layer.borderWidth = 1.0
         view.addSubview(output)
         
-        input = UITextField(frame: CGRectMake(10, 400, screenWidth-20, 40))
+        input = UITextField(frame: CGRect(x: 10, y: 400, width: screenWidth-20, height: 40))
         input.attributedPlaceholder =  NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
         input.font = UIFont(name: "Menlo-Regular", size: 16)
         input.textColor = UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 1.0)
@@ -74,28 +77,33 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         input.layer.borderWidth = 1.0
         input.delegate = self
         view.addSubview(input)
+        input.hidden = true
         
-        lButton = UIButton(frame: CGRectMake(10, 400, screenWidth/2-15, 50))
+        
+        lButton = UIButton(frame: CGRect(x: 10, y: 400, width: screenWidth/2-15, height: 50))
         lButton.backgroundColor = UIColor.blackColor()
-        lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
+       // lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
         lButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         lButton.setTitleColor(UIColor.greenColor(), forState: UIControlState.Normal)
         lButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
         lButton.layer.borderWidth = 1.0
         lButton.layer.borderColor = (UIColor.greenColor().CGColor)
+        view.addSubview(lButton)
+        lButton.hidden = true
         
-        rButton = UIButton(frame: CGRectMake(screenWidth/2+5, 400, screenWidth/2-15, 50))
+        
+        rButton = UIButton(frame: CGRect(x: screenWidth/2+5, y: 400, width: screenWidth/2-15, height: 50))
         rButton.backgroundColor = UIColor.blackColor()
-        rButton.setTitle(question2.acceptedAnswers[1], forState: UIControlState.Normal)
+        //rButton.setTitle(question2.acceptedAnswers[1], forState: UIControlState.Normal)
         rButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         rButton.setTitleColor(UIColor.greenColor(), forState: UIControlState.Normal)
         rButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
         rButton.layer.borderWidth = 1.0
         rButton.layer.borderColor = (UIColor.greenColor().CGColor)
+        view.addSubview(rButton)
+        rButton.hidden = true
         
         buttonArray += [lButton,rButton]
-        print(buttonArray[0])
-        print(buttonArray[1])
         
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
@@ -103,117 +111,179 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         locationManager.startUpdatingLocation()
         
         view.backgroundColor = UIColor.blackColor()
-    }
-    
-    func questionHandler(sender: UIButton!){
         
-        if sender == buttonArray[0] {
-            print("male")
-        } else if sender == buttonArray[1] {
-            print("female")
-        }
+        questionHandler(activeQuestion)
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        if activeQuestion == questions[0] { //If activeQuestion is Q1
-            if input.text != "" { //If the user types something as their name
+//    func questionHandler(sender: UIButton!){
+//        
+//        var count = 0
+//        print(count)
+//        if sender == buttonArray[0] {
+//            gender = question2.acceptedAnswers[count]
+//            
+//
+//        } else if sender == buttonArray[1] {
+//            gender = question2.acceptedAnswers[count+1]
+//        }
+//        
+//        question3.title = "Gender: '\(gender)' saved. Is your current location your home?"
+//        count += 1
+//        print(count)
+//        activeQuestion = questions[2]
+//        output.text = activeQuestion.title
+//        
+//        lButton.setTitle(question3.acceptedAnswers[0], forState: UIControlState.Normal)
+//        rButton.setTitle(question3.acceptedAnswers[1], forState: UIControlState.Normal)
+//    }
+
+func questionHandler(question: Question) {
+    
+    input.hidden = true; lButton.hidden = true; rButton.hidden = true
+    
+    if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
+        return
+    }
+    
+    if activeQuestion.needsKeyboard { // If the question's needsKeyboard property is true, unhide the keyboard
+        input.hidden = false
+        
+        print("Keyboard is needed!")
+        
+
+
+    } else { // If the question's needsKeyboard property is false, unhide the buttons
+        print("Buttons are needed!")
+        lButton.hidden = false
+        rButton.hidden = false
+    }
+    answersHandler()
+}
+    
+func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
+    return true
+}
+    
+
+func answersHandler()
+{
+    if activeQuestion.needsKeyboard {
+            if  activeQuestion.acceptedAnswers == nil {
+                // check for accepted answer
+                //Run the textFieldShouldReturn func
+            }
+            
+            if input.text != "" {
+                
                 name = input.text //Saves the name to var: name
-                question2.title = "Hello, \(name). Gender scan failed, please manually input your gender." //Changes Q2.title to include var: name
-                input.text = nil //Clears input.text, setting up for Q2
-                input.removeFromSuperview()
-                view.addSubview(lButton)
-                view.addSubview(rButton)
-                activeQuestion = questions[1] //Moves the activeQuestion on to Q2
-                output.text = activeQuestion.title //Changes output.text to display Q2.title
-                //     output.sizeToFit()
-            } else { //Else if the user types nothing
+                ++questionIndex
+                input.text = nil //Clears text field
+                view.endEditing(true)
+                questionHandler(activeQuestion)
+                
+            } else {
                 let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
                 ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
                 presentViewController(ac, animated: true, completion: nil)
                 input.text = nil //Clears text field
             }
-            return true
-    }
         
+    }
+}
+        
+            
+       // 1: Check if Question needs keybard or buttons. Find what the active question is, and assign the output.text property to display the appropriate title. Set up the buttons/input to accept that questions accepted answers. Once the enter key is pressed, or once a button is pressed, log the answer and proceed to the next question in sequence.
+        
+        
+
+    
+    
+//    func textFieldShouldReturn(textField: UITextField) -> Bool {
+//        if activeQuestion == questions[0] { //If activeQuestion is Q1
+//            if input.text != "" { //If the user types something as their name
+//                name = input.text //Saves the name to var: name
+//                question2.title = "Hello, \(name). Gender scan failed, please manually input your gender." //Changes Q2.title to include var: name
+//                input.text = nil //Clears input.text, setting up for Q2
+//                input.removeFromSuperview()
+//                view.addSubview(lButton)
+//                view.addSubview(rButton)
+//                activeQuestion = questions[1] //Moves the activeQuestion on to Q2
+//                output.text = activeQuestion.title //Changes output.text to display Q2.title
+//                //     output.sizeToFit()
+//            } else { //Else if the user types nothing
+//                let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
+//                ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
+//                presentViewController(ac, animated: true, completion: nil)
+//                input.text = nil //Clears text field
+//            }
+//            return true
+//        }
+//        return true
+//    }
+    
     
             
-    if activeQuestion == questions[1] { //If activeQuestion is Q2
-        if let index = question2.acceptedAnswers.indexOf(input.text!) { //Checks if input.text = any accepted answer of Q2
-            gender = question2.acceptedAnswers[index] //Saves the selected gender to var: gender
-            question3.title = "Gender: '\(gender)' saved. Is your current location your home?"
-            input.text = nil
-            activeQuestion = questions[2]
-            output.text = activeQuestion.title
-            
-            print(name,", ", gender)
-        } else { //If input.text doesn't = any accepted answer of Q2
-            let ac = UIAlertController(title: "I'm sorry, I don't understand that.", message: "Accepted answers: Male, Female, Boy, Girl", preferredStyle: .Alert)
-            ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
-            presentViewController(ac, animated: true, completion: nil)
-            input.text = nil //Clears text field
-        }
-        return true
-        
-    } else if activeQuestion == questions[2] {
-        if input.text == question3.acceptedAnswers[0] {
-            if let location = locationManager.location { //This func and closure convertlocation from CLLocation to CLPlacemark, so it's readable
-                reverseGeocode(location, completion: { (returnedLocation:CLPlacemark) in
-                    
-                    self.homeLocation = returnedLocation
-                    
-                    print(returnedLocation)
-                    print(returnedLocation.name)
-                    print(returnedLocation.country)
-                    
-                    let ac = UIAlertController(title: "Home Location", message: "Home location set to \(returnedLocation.name!), \(returnedLocation.thoroughfare!), \(returnedLocation.postalCode!), \(returnedLocation.country!).", preferredStyle: .Alert)
-                    ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-                    self.presentViewController(ac, animated: true, completion: nil)
-                    
-                })
-                
-                
-            }
-            
-            input.text = nil
-            output.text = "End of prototype"
-            input.enabled = false
-            //   input.removeFromSuperview() //
-            input.attributedPlaceholder =  NSAttributedString(string: "System Disabled, Contact Admin ", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
-            
-            
-        } else if input.text == question3.acceptedAnswers[1] || input.text != question3.acceptedAnswers[0] || input.text != question3.acceptedAnswers[1] {
-            let ac = UIAlertController(title: "Have you enabled Location Services?", message: "I won't tell the NSA where you are, I promise.", preferredStyle: .Alert)
-            ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-            presentViewController(ac, animated: true, completion: nil)
-            input.text = nil //Clears text field
-        }
-        
-        
-    }
-    return true
-    }
-    
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let newLocation = locations.last
-        
-        //        if let newLocation = newLocation {
-        //
-        //        }
-    }
-    
-    func reverseGeocode (location: CLLocation, completion:(returnedLocation:CLPlacemark)->Void) {
-        CLGeocoder().reverseGeocodeLocation(location) { (placemark, error) -> Void in
-            if let placemark = placemark{
-                
-                completion(returnedLocation: placemark[0])
-            }
-        }
-    }
-    
+//   if activeQuestion == questions[2] {
+//        if input.text == question3.acceptedAnswers[0] {
+//            if let location = locationManager.location { //This func and closure convertlocation from CLLocation to CLPlacemark, so it's readable
+//                reverseGeocode(location, completion: { (returnedLocation:CLPlacemark) in
+//                    
+//                    self.homeLocation = returnedLocation
+//                    
+//                    print(returnedLocation)
+//                    print(returnedLocation.name)
+//                    print(returnedLocation.country)
+//                    
+//                    let ac = UIAlertController(title: "Home Location", message: "Home location set to \(returnedLocation.name!), \(returnedLocation.thoroughfare!), \(returnedLocation.postalCode!), \(returnedLocation.country!).", preferredStyle: .Alert)
+//                    ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+//                    self.presentViewController(ac, animated: true, completion: nil)
+//                    
+//                })
+//                
+//                
+//            }
+//            
+//            input.text = nil
+//            output.text = "End of prototype"
+//            input.enabled = false
+//            //   input.removeFromSuperview() //
+//            input.attributedPlaceholder =  NSAttributedString(string: "System Disabled, Contact Admin ", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
+//            
+//            
+//        } else if input.text == question3.acceptedAnswers[1] || input.text != question3.acceptedAnswers[0] || input.text != question3.acceptedAnswers[1] {
+//            let ac = UIAlertController(title: "Have you enabled Location Services?", message: "I won't tell the NSA where you are, I promise.", preferredStyle: .Alert)
+//            ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
+//            presentViewController(ac, animated: true, completion: nil)
+//            input.text = nil //Clears text field
+//        }
+//        
+//        
+//    }
+//    return true
+//    }
+//    
+//    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//        let newLocation = locations.last
+//        
+//        //        if let newLocation = newLocation {
+//        //
+//        //        }
+//    }
+//    
+//    func reverseGeocode (location: CLLocation, completion:(returnedLocation:CLPlacemark)->Void) {
+//        CLGeocoder().reverseGeocodeLocation(location) { (placemark, error) -> Void in
+//            if let placemark = placemark{
+//                
+//                completion(returnedLocation: placemark[0])
+//            }
+//        }
+//    }
+//
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
 }
+
 
