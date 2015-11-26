@@ -209,10 +209,18 @@ func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user
 
 func buttonHandler(sender:UIButton){
     if sender == lButton {
+        if activeQuestion.wilBeSaved == true {
+            gender = lButton.titleLabel?.text
+        }
         
     } else if sender == rButton {
-        
+        if activeQuestion.wilBeSaved == true {
+            gender = rButton.titleLabel?.text
+        }
     }
+    question2.correctResponce = "Gender saved as \(gender)"
+    output.text = activeQuestion.correctResponce
+
 }
 
 
