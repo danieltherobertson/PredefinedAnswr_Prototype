@@ -46,10 +46,11 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true)
 //        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
         question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false)
-        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "If you're reading this, prototype has worked!", needsKeyboard: true, willBeSaved: false)
+        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "Did you know you can change the game's colour?", needsKeyboard: true, willBeSaved: false)
+        question5 = Question(title: "Testing", acceptedAnswers: ["I love bacon","I love bacon"], correctResponce: "Who doesn't?!", needsKeyboard: false, willBeSaved: false)
         
         //Adds questions to questions array
-        questions += [question1,question2,question3,question4/*question5*/]
+        questions += [question1,question2,question3,question4,question5]
         
         
         
@@ -140,25 +141,19 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         view.backgroundColor = UIColor.blackColor()
         
         questionHandler(activeQuestion)
-      //  timer = NSTimer.scheduledTimerWithTimeInterval(3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
-
     }
     
 func questionHandler(question: Question) {
-    
     input.hidden = true; lButton.hidden = true; rButton.hidden = true
     
-    if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
-        return
-    }
-    
+//    if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
+//        output.text = "END OF PROTOTYPE"
+//        input.enabled = false
+//    }
+
     if activeQuestion.needsKeyboard { // If the question's needsKeyboard property is true, unhide the keyboard
         input.hidden = false
-        
         print("Keyboard is needed!")
-        
-
-
     } else { // If the question's needsKeyboard property is false, unhide the buttons
         print("Buttons are needed!")
         lButton.hidden = false
@@ -197,7 +192,8 @@ func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user
             view.endEditing(true)
             output.text = activeQuestion.correctResponce
             input.text = ""
-            timer = NSTimer.scheduledTimerWithTimeInterval(1.7, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+            nameSubmit = false
+            timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
             print("Advancing to question \(questionIndex+1)")
         }
     }
@@ -206,6 +202,13 @@ func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user
         if let _ = activeQuestion.acceptedAnswers!.indexOf(input.text!) {
             input.text = ""
             output.text = activeQuestion.correctResponce
+            keyboardSubmit = false
+            timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+        } else {
+            let ac = UIAlertController(title: "System Error: 3230_ac334", message: "Invalid answer. Accepted answers: \(activeQuestion.acceptedAnswers!)", preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
+            presentViewController(ac, animated: true, completion: nil)
+            input.text = nil //Clears text field
         }
     }
     return true
@@ -224,12 +227,19 @@ func buttonHandler(sender:UIButton){
     }
     question2.correctResponce = "Gender saved as \(gender)"
     output.text = activeQuestion.correctResponce
-    timer = NSTimer.scheduledTimerWithTimeInterval(1.7, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+    timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
 
 }
     
 func questionAdvance() {
     ++questionIndex
+    if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
+        output.text = "END OF PROTOTYPE ~ SYSTEM LOCK ENABLED"
+        input.hidden = true
+        lButton.hidden = true
+        rButton.hidden = true
+        return
+    }
     output.text = activeQuestion.title
     questionHandler(activeQuestion)
 }
