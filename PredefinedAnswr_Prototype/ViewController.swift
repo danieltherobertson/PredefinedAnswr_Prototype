@@ -30,6 +30,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var inputBorder:UIView!
     var lButton:UIButton!; var rButton:UIButton!
     
+    var timer = NSTimer()
+    var counter = 0
+    
     var colourButton1:UIButton!; var colourButton2:UIButton!; var colourButton3:UIButton!; var colour:UIColor!
     
     var buttonArray = [UIButton!]()
@@ -137,6 +140,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         view.backgroundColor = UIColor.blackColor()
         
         questionHandler(activeQuestion)
+      //  timer = NSTimer.scheduledTimerWithTimeInterval(3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+
     }
     
 func questionHandler(question: Question) {
@@ -189,12 +194,11 @@ func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user
             name = input.text //Saves the name to var: name
             question2.title = "Hello, \(name), what's your gender?"
             print("Name is set to '\(name)'")
-            ++questionIndex
-            print("Advancing to question \(questionIndex+1)")
-            input.text = nil //Clears text field
-            output.text = nil
             view.endEditing(true)
-            questionHandler(activeQuestion)
+            output.text = activeQuestion.correctResponce
+            input.text = ""
+            timer = NSTimer.scheduledTimerWithTimeInterval(1.7, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+            print("Advancing to question \(questionIndex+1)")
         }
     }
     
@@ -220,7 +224,14 @@ func buttonHandler(sender:UIButton){
     }
     question2.correctResponce = "Gender saved as \(gender)"
     output.text = activeQuestion.correctResponce
+    timer = NSTimer.scheduledTimerWithTimeInterval(1.7, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
 
+}
+    
+func questionAdvance() {
+    ++questionIndex
+    output.text = activeQuestion.title
+    questionHandler(activeQuestion)
 }
 
 
