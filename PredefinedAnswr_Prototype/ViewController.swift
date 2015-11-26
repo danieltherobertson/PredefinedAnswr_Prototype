@@ -52,11 +52,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         //Adds questions to questions array
         questions += [question1,question2,question3,question4,question5]
         
-        
-        
         //Sets default active question to Q1
         //activeQuestion = questions[0]
-        
         
         //Draw content+layout
         output = PaddedLabel(frame:CGRect(x: 10, y: 270, width: screenWidth-20, height: 100))
@@ -84,7 +81,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         view.addSubview(input)
         input.hidden = true
         
-        
         lButton = UIButton(frame: CGRect(x: 10, y: 400, width: screenWidth/2-15, height: 50))
         lButton.backgroundColor = UIColor.blackColor()
        // lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
@@ -95,7 +91,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         lButton.layer.borderColor = colour.CGColor
         view.addSubview(lButton)
         lButton.hidden = true
-        
         
         rButton = UIButton(frame: CGRect(x: screenWidth/2+5, y: 400, width: screenWidth/2-15, height: 50))
         rButton.backgroundColor = UIColor.blackColor()
@@ -143,219 +138,128 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         questionHandler(activeQuestion)
     }
     
-func questionHandler(question: Question) {
-    input.hidden = true; lButton.hidden = true; rButton.hidden = true
-    
-//    if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
-//        output.text = "END OF PROTOTYPE"
-//        input.enabled = false
-//    }
+    func questionHandler(question: Question) {
+        input.hidden = true; lButton.hidden = true; rButton.hidden = true
 
-    if activeQuestion.needsKeyboard { // If the question's needsKeyboard property is true, unhide the keyboard
-        input.hidden = false
-        print("Keyboard is needed!")
-    } else { // If the question's needsKeyboard property is false, unhide the buttons
-        print("Buttons are needed!")
-        lButton.hidden = false
-        rButton.hidden = false
+        if activeQuestion.needsKeyboard { // If the question's needsKeyboard property is true, unhide the keyboard
+            input.hidden = false
+            print("Keyboard is needed!")
+        } else { // If the question's needsKeyboard property is false, unhide the buttons
+            print("Buttons are needed!")
+            lButton.hidden = false
+            rButton.hidden = false
+        }
+        answersHandler()
     }
-    answersHandler()
-}
  
-func answersHandler(){
-    if activeQuestion.needsKeyboard {
-            if  activeQuestion.acceptedAnswers == nil {
-                nameSubmit = true
-                print("We're on Question 1")
-            } else {
-                keyboardSubmit = true
-                print("Keyboard question but not Question 1")
+    func answersHandler(){
+        if activeQuestion.needsKeyboard {
+                if  activeQuestion.acceptedAnswers == nil {
+                    nameSubmit = true
+                    print("We're on Question 1")
+                } else {
+                    keyboardSubmit = true
+                    print("Keyboard question but not Question 1")
+                }
+        } else if activeQuestion.needsKeyboard == false {
+            output.text = activeQuestion.title
+            lButton.setTitle(activeQuestion.acceptedAnswers![0], forState: UIControlState.Normal)
+            rButton.setTitle(activeQuestion.acceptedAnswers![1], forState: UIControlState.Normal)
+        }
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
+        if nameSubmit == true {
+            if input.text == "" || input.text!.containsString(" ") {
+                let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
+                ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
+                presentViewController(ac, animated: true, completion: nil)
+                input.text = nil //Clears text field
+            } else if input.text != "" {
+                name = input.text //Saves the name to var: name
+                question2.title = "Hello, \(name), what's your gender?"
+                print("Name is set to '\(name)'")
+                view.endEditing(true)
+                output.text = activeQuestion.correctResponce
+                input.text = ""
+                nameSubmit = false
+                timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+                print("Advancing to question \(questionIndex+1)")
             }
-    } else if activeQuestion.needsKeyboard == false {
-        output.text = activeQuestion.title
-        lButton.setTitle(activeQuestion.acceptedAnswers![0], forState: UIControlState.Normal)
-        rButton.setTitle(activeQuestion.acceptedAnswers![1], forState: UIControlState.Normal)
-    }
-}
-    
-func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
-    if nameSubmit == true {
-        if input.text == "" || input.text!.containsString(" ") {
-            let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
-            ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
-            presentViewController(ac, animated: true, completion: nil)
-            input.text = nil //Clears text field
-        } else if input.text != "" {
-            name = input.text //Saves the name to var: name
-            question2.title = "Hello, \(name), what's your gender?"
-            print("Name is set to '\(name)'")
-            view.endEditing(true)
-            output.text = activeQuestion.correctResponce
-            input.text = ""
-            nameSubmit = false
-            timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
-            print("Advancing to question \(questionIndex+1)")
-        }
-    }
-    
-    if keyboardSubmit == true {
-        if let _ = activeQuestion.acceptedAnswers!.indexOf(input.text!) {
-            input.text = ""
-            output.text = activeQuestion.correctResponce
-            keyboardSubmit = false
-            timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
-        } else {
-            let ac = UIAlertController(title: "System Error: 3230_ac334", message: "Invalid answer. Accepted answers: \(activeQuestion.acceptedAnswers!)", preferredStyle: .Alert)
-            ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
-            presentViewController(ac, animated: true, completion: nil)
-            input.text = nil //Clears text field
-        }
-    }
-    return true
-}
-
-func buttonHandler(sender:UIButton){
-    if sender == lButton {
-        if activeQuestion.wilBeSaved == true {
-            gender = lButton.titleLabel?.text
         }
         
-    } else if sender == rButton {
-        if activeQuestion.wilBeSaved == true {
-            gender = rButton.titleLabel?.text
+        if keyboardSubmit == true {
+            if let _ = activeQuestion.acceptedAnswers!.indexOf(input.text!) {
+                input.text = ""
+                output.text = activeQuestion.correctResponce
+                keyboardSubmit = false
+                timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+            } else {
+                let ac = UIAlertController(title: "System Error: 3230_ac334", message: "Invalid answer. Accepted answers: \(activeQuestion.acceptedAnswers!)", preferredStyle: .Alert)
+                ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
+                presentViewController(ac, animated: true, completion: nil)
+                input.text = nil //Clears text field
+            }
         }
+        return true
     }
-    question2.correctResponce = "Gender saved as \(gender)"
-    output.text = activeQuestion.correctResponce
-    timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
 
-}
-    
-func questionAdvance() {
-    ++questionIndex
-    if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
-        output.text = "END OF PROTOTYPE ~ SYSTEM LOCK ENABLED"
-        input.hidden = true
-        lButton.hidden = true
-        rButton.hidden = true
-        return
-    }
-    output.text = activeQuestion.title
-    questionHandler(activeQuestion)
-}
-
-
-func changeColour(sender:UIButton){
-    switch sender {
-        case colourButton1:
-            colour = UIColor.redColor()
-    
-        case colourButton2:
-            colour = UIColor.greenColor()
-        
-        case colourButton3:
-            colour = UIColor.blueColor()
-        
-        default:
-            colour = UIColor.greenColor()
-    }
-    output.textColor = colour
-    output.layer.borderColor = colour.CGColor
-    input.attributedPlaceholder = NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
-    input.textColor = colour
-    input.layer.borderColor = colour.CGColor
-    lButton.layer.borderColor = colour.CGColor
-    rButton.layer.borderColor = colour.CGColor
-    lButton.setTitleColor(colour, forState: UIControlState.Normal)
-    rButton.setTitleColor(colour, forState: UIControlState.Normal)
-}
-    
-//    func textFieldShouldReturn(textField: UITextField) -> Bool {
-//        if activeQuestion == questions[0] { //If activeQuestion is Q1
-//            if input.text != "" { //If the user types something as their name
-//                name = input.text //Saves the name to var: name
-//                question2.title = "Hello, \(name). Gender scan failed, please manually input your gender." //Changes Q2.title to include var: name
-//                input.text = nil //Clears input.text, setting up for Q2
-//                input.removeFromSuperview()
-//                view.addSubview(lButton)
-//                view.addSubview(rButton)
-//                activeQuestion = questions[1] //Moves the activeQuestion on to Q2
-//                output.text = activeQuestion.title //Changes output.text to display Q2.title
-//                //     output.sizeToFit()
-//            } else { //Else if the user types nothing
-//                let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
-//                ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
-//                presentViewController(ac, animated: true, completion: nil)
-//                input.text = nil //Clears text field
-//            }
-//            return true
-//        }
-//        return true
-//    }
-    
-    
+    func buttonHandler(sender:UIButton){
+        if sender == lButton {
+            if activeQuestion.wilBeSaved == true {
+                gender = lButton.titleLabel?.text
+            }
             
-//   if activeQuestion == questions[2] {
-//        if input.text == question3.acceptedAnswers[0] {
-//            if let location = locationManager.location { //This func and closure convertlocation from CLLocation to CLPlacemark, so it's readable
-//                reverseGeocode(location, completion: { (returnedLocation:CLPlacemark) in
-//                    
-//                    self.homeLocation = returnedLocation
-//                    
-//                    print(returnedLocation)
-//                    print(returnedLocation.name)
-//                    print(returnedLocation.country)
-//                    
-//                    let ac = UIAlertController(title: "Home Location", message: "Home location set to \(returnedLocation.name!), \(returnedLocation.thoroughfare!), \(returnedLocation.postalCode!), \(returnedLocation.country!).", preferredStyle: .Alert)
-//                    ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-//                    self.presentViewController(ac, animated: true, completion: nil)
-//                    
-//                })
-//                
-//                
-//            }
-//            
-//            input.text = nil
-//            output.text = "End of prototype"
-//            input.enabled = false
-//            //   input.removeFromSuperview() //
-//            input.attributedPlaceholder =  NSAttributedString(string: "System Disabled, Contact Admin ", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
-//            
-//            
-//        } else if input.text == question3.acceptedAnswers[1] || input.text != question3.acceptedAnswers[0] || input.text != question3.acceptedAnswers[1] {
-//            let ac = UIAlertController(title: "Have you enabled Location Services?", message: "I won't tell the NSA where you are, I promise.", preferredStyle: .Alert)
-//            ac.addAction(UIAlertAction(title: "Okay", style: .Default, handler: nil))
-//            presentViewController(ac, animated: true, completion: nil)
-//            input.text = nil //Clears text field
-//        }
-//        
-//        
-//    }
-//    return true
-//    }
-//    
-//    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        let newLocation = locations.last
-//        
-//        //        if let newLocation = newLocation {
-//        //
-//        //        }
-//    }
-//    
-//    func reverseGeocode (location: CLLocation, completion:(returnedLocation:CLPlacemark)->Void) {
-//        CLGeocoder().reverseGeocodeLocation(location) { (placemark, error) -> Void in
-//            if let placemark = placemark{
-//                
-//                completion(returnedLocation: placemark[0])
-//            }
-//        }
-//    }
-//
+        } else if sender == rButton {
+            if activeQuestion.wilBeSaved == true {
+                gender = rButton.titleLabel?.text
+            }
+        }
+        question2.correctResponce = "Gender saved as \(gender)"
+        output.text = activeQuestion.correctResponce
+        timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
+    }
+    
+    func questionAdvance() {
+        ++questionIndex
+        if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
+            output.text = "END OF PROTOTYPE ~ SYSTEM LOCK ENABLED"
+            input.hidden = true
+            lButton.hidden = true
+            rButton.hidden = true
+            return
+        }
+        output.text = activeQuestion.title
+        questionHandler(activeQuestion)
+    }
 
+    func changeColour(sender:UIButton){
+        switch sender {
+            case colourButton1:
+                colour = UIColor.redColor()
+        
+            case colourButton2:
+                colour = UIColor.greenColor()
+            
+            case colourButton3:
+                colour = UIColor.blueColor()
+            
+            default:
+                colour = UIColor.greenColor()
+        }
+        output.textColor = colour
+        output.layer.borderColor = colour.CGColor
+        input.attributedPlaceholder = NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
+        input.textColor = colour
+        input.layer.borderColor = colour.CGColor
+        lButton.layer.borderColor = colour.CGColor
+        rButton.layer.borderColor = colour.CGColor
+        lButton.setTitleColor(colour, forState: UIControlState.Normal)
+        rButton.setTitleColor(colour, forState: UIControlState.Normal)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 }
-
-
