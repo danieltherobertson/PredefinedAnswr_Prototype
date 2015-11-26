@@ -24,8 +24,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var homeLocation:CLPlacemark?
     
     var input:UITextField!
-    var nameSubmit:Bool!
-    var keyboardSubmit:Bool!
+    var nameSubmit:Bool = false
+    var keyboardSubmit:Bool = false
     var output:UILabel!
     var inputBorder:UIView!
     var lButton:UIButton!; var rButton:UIButton!
@@ -41,12 +41,12 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         //Creates questions
         question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true)
         question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true)
-        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
-        question4 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false)
-        question5 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "If you're reading this, prototype has worked!", needsKeyboard: true, willBeSaved: false)
+//        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
+        question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false)
+        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "If you're reading this, prototype has worked!", needsKeyboard: true, willBeSaved: false)
         
         //Adds questions to questions array
-        questions += [question1,question2,question3,question4,question5]
+        questions += [question1,question2,question3,question4/*question5*/]
         
         
         
@@ -86,7 +86,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
        // lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
         lButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         lButton.setTitleColor(colour, forState: UIControlState.Normal)
-        lButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
+        lButton.addTarget(self, action: "buttonHandler:", forControlEvents: UIControlEvents.TouchUpInside)
         lButton.layer.borderWidth = 1.0
         lButton.layer.borderColor = colour.CGColor
         view.addSubview(lButton)
@@ -98,7 +98,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         //rButton.setTitle(question2.acceptedAnswers[1], forState: UIControlState.Normal)
         rButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         rButton.setTitleColor(colour, forState: UIControlState.Normal)
-        rButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
+        rButton.addTarget(self, action: "buttonHandler:", forControlEvents: UIControlEvents.TouchUpInside)
         rButton.layer.borderWidth = 1.0
         rButton.layer.borderColor = colour.CGColor
         view.addSubview(rButton)
@@ -139,28 +139,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         questionHandler(activeQuestion)
     }
     
-//    func questionHandler(sender: UIButton!){
-//        
-//        var count = 0
-//        print(count)
-//        if sender == buttonArray[0] {
-//            gender = question2.acceptedAnswers[count]
-//            
-//
-//        } else if sender == buttonArray[1] {
-//            gender = question2.acceptedAnswers[count+1]
-//        }
-//        
-//        question3.title = "Gender: '\(gender)' saved. Is your current location your home?"
-//        count += 1
-//        print(count)
-//        activeQuestion = questions[2]
-//        output.text = activeQuestion.title
-//        
-//        lButton.setTitle(question3.acceptedAnswers[0], forState: UIControlState.Normal)
-//        rButton.setTitle(question3.acceptedAnswers[1], forState: UIControlState.Normal)
-//    }
-
 func questionHandler(question: Question) {
     
     input.hidden = true; lButton.hidden = true; rButton.hidden = true
@@ -188,52 +166,66 @@ func answersHandler(){
     if activeQuestion.needsKeyboard {
             if  activeQuestion.acceptedAnswers == nil {
                 nameSubmit = true
+                print("We're on Question 1")
             } else {
-              keyboardSubmit = true
+                keyboardSubmit = true
+                print("Keyboard question but not Question 1")
             }
-        
+    } else if activeQuestion.needsKeyboard == false {
+        output.text = activeQuestion.title
+        lButton.setTitle(activeQuestion.acceptedAnswers![0], forState: UIControlState.Normal)
+        rButton.setTitle(activeQuestion.acceptedAnswers![1], forState: UIControlState.Normal)
     }
 }
     
 func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
     if nameSubmit == true {
-        if nameSubmit == true && input.text == "" || input.text!.containsString(" ") {
+        if input.text == "" || input.text!.containsString(" ") {
             let ac = UIAlertController(title: "System Error: 3230_ac334", message: "My scans detect no user input", preferredStyle: .Alert)
             ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
             presentViewController(ac, animated: true, completion: nil)
             input.text = nil //Clears text field
         } else if input.text != "" {
             name = input.text //Saves the name to var: name
+            question2.title = "Hello, \(name), what's your gender?"
             print("Name is set to '\(name)'")
             ++questionIndex
+            print("Advancing to question \(questionIndex+1)")
             input.text = nil //Clears text field
+            output.text = nil
             view.endEditing(true)
             questionHandler(activeQuestion)
         }
-    } else if keyboardSubmit == true{
-       if let index = activeQuestion.acceptedAnswers!.indexOf(input.text!) {
+    }
+    
+    if keyboardSubmit == true {
+        if let _ = activeQuestion.acceptedAnswers!.indexOf(input.text!) {
+            input.text = ""
             output.text = activeQuestion.correctResponce
         }
     }
     return true
 }
 
+func buttonHandler(sender:UIButton){
+    if sender == lButton {
+        
+    } else if sender == rButton {
+        
+    }
+}
+
+
 func changeColour(sender:UIButton){
     switch sender {
         case colourButton1:
             colour = UIColor.redColor()
-            output.text = "Red Mode Activated"
-            print("R")
     
         case colourButton2:
             colour = UIColor.greenColor()
-            output.text = "Green Mode Activated"
-            print("G")
-            
+        
         case colourButton3:
             colour = UIColor.blueColor()
-            output.text = "Blue Mode Activated"
-            print("B")
         
         default:
             colour = UIColor.greenColor()
@@ -245,6 +237,8 @@ func changeColour(sender:UIButton){
     input.layer.borderColor = colour.CGColor
     lButton.layer.borderColor = colour.CGColor
     rButton.layer.borderColor = colour.CGColor
+    lButton.setTitleColor(colour, forState: UIControlState.Normal)
+    rButton.setTitleColor(colour, forState: UIControlState.Normal)
 }
     
 //    func textFieldShouldReturn(textField: UITextField) -> Bool {
