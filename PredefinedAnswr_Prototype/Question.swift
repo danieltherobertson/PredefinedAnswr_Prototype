@@ -11,13 +11,15 @@ class Question:NSObject {
     
     var title: String!
     var acceptedAnswers: [String]?
+    var correctResponce: String
     var needsKeyboard: Bool
     var wilBeSaved: Bool
     
-    init(title:String, acceptedAnswers:[String]?, needsKeyboard: Bool, willBeSaved: Bool) {
+    init(title:String, acceptedAnswers:[String]?, correctResponce:String, needsKeyboard: Bool, willBeSaved: Bool) {
         
         self.title = title
         self.acceptedAnswers = acceptedAnswers
+        self.correctResponce = correctResponce
         self.needsKeyboard = needsKeyboard
         self.wilBeSaved = willBeSaved
         super.init()

@@ -25,6 +25,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     var input:UITextField!
     var nameSubmit:Bool!
+    var keyboardSubmit:Bool!
     var output:UILabel!
     var inputBorder:UIView!
     var lButton:UIButton!; var rButton:UIButton!
@@ -38,11 +39,11 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         colour = UIColor.greenColor()
         
         //Creates questions
-        question1 = Question(title: "What's your name?", acceptedAnswers:nil, needsKeyboard: true, willBeSaved: true)
-        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], needsKeyboard: false, willBeSaved: true)
-        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], needsKeyboard: false, willBeSaved: true)
-        question4 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], needsKeyboard: false, willBeSaved: false)
-        question5 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], needsKeyboard: true, willBeSaved: false)
+        question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true)
+        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true)
+        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
+        question4 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false)
+        question5 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "If you're reading this, prototype has worked!", needsKeyboard: true, willBeSaved: false)
         
         //Adds questions to questions array
         questions += [question1,question2,question3,question4,question5]
@@ -188,12 +189,11 @@ func answersHandler(){
             if  activeQuestion.acceptedAnswers == nil {
                 nameSubmit = true
             } else {
-                
+              keyboardSubmit = true
             }
         
     }
 }
-    
     
 func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user's answer to Question 0
     if nameSubmit == true {
@@ -209,6 +209,10 @@ func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user
             input.text = nil //Clears text field
             view.endEditing(true)
             questionHandler(activeQuestion)
+        }
+    } else if keyboardSubmit == true{
+       if let index = activeQuestion.acceptedAnswers!.indexOf(input.text!) {
+            output.text = activeQuestion.correctResponce
         }
     }
     return true
