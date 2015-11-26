@@ -40,7 +40,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
 }
+    
+extension UIViewController {
+    func animateBtn(button: UIButton) {
+        UIView.animateWithDuration(0.15, animations: {
+            button.alpha = 0.2
+            }, completion: {
+                (value: Bool) in
+                button.enabled = false
+                UIView.animateWithDuration(0.15, animations: {
+                    button.alpha = 1
+                    }, completion: {
+                        (value: Bool) in
+                        button.enabled = true
+                })
+        })
+    }
+}
+
+
 

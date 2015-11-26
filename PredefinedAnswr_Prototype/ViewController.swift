@@ -159,7 +159,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
                     print("We're on Question 1")
                 } else {
                     keyboardSubmit = true
-                    print("Keyboard question but not Question 1")
                 }
         } else if activeQuestion.needsKeyboard == false {
             output.text = activeQuestion.title
@@ -184,7 +183,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
                 input.text = ""
                 nameSubmit = false
                 timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
-                print("Advancing to question \(questionIndex+1)")
             }
         }
         
@@ -205,28 +203,31 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
 
     func buttonHandler(sender:UIButton){
-        if sender == lButton {
-            if activeQuestion.wilBeSaved == true {
+        animateBtn(sender as UIButton)
+        if activeQuestion.wilBeSaved == true {
+            if sender == lButton {
                 gender = lButton.titleLabel?.text
-            }
-            
-        } else if sender == rButton {
-            if activeQuestion.wilBeSaved == true {
+            } else if sender == rButton {
                 gender = rButton.titleLabel?.text
             }
+            question2.correctResponce = "Gender saved as \(gender)"
+            print("Gender saved as \(gender)")
         }
-        question2.correctResponce = "Gender saved as \(gender)"
+        
         output.text = activeQuestion.correctResponce
         timer = NSTimer.scheduledTimerWithTimeInterval(2.3, target:self, selector: Selector("questionAdvance"), userInfo: nil, repeats: false)
     }
     
     func questionAdvance() {
         ++questionIndex
+        print("Advancing to question \(questionIndex+1)")
         if questionIndex == questions.count { //If the current question index is equal to the length of questions array, i.e the final question, return from function
             output.text = "END OF PROTOTYPE ~ SYSTEM LOCK ENABLED"
             input.hidden = true
+            view.endEditing(true)
             lButton.hidden = true
             rButton.hidden = true
+            
             return
         }
         output.text = activeQuestion.title
