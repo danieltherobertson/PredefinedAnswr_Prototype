@@ -17,10 +17,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var activeQuestion: Question {return questions[questionIndex]} //Setting activeQuestion to be the questionIndex position in the array, so that starts as array index 0, so the first question is the default activeQuestion
     var questionIndex = 0
     
-    var question1:Question!
-    var question2:Question!
-    var question3:Question!
-    var question4:Question!
+    var question1:Question!; var question2:Question!; var question3:Question!; var question4:Question!; var question5:Question!
     
     var name:String!
     var gender:String!
@@ -30,22 +27,25 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var nameSubmit:Bool!
     var output:UILabel!
     var inputBorder:UIView!
-    var lButton:UIButton!
-    var rButton:UIButton!
+    var lButton:UIButton!; var rButton:UIButton!
+    
+    var colourButton1:UIButton!; var colourButton2:UIButton!; var colourButton3:UIButton!; var colour:UIColor!
     
     var buttonArray = [UIButton!]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        colour = UIColor.greenColor()
         
         //Creates questions
         question1 = Question(title: "What's your name?", acceptedAnswers:nil, needsKeyboard: true, willBeSaved: true)
         question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], needsKeyboard: false, willBeSaved: true)
         question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], needsKeyboard: false, willBeSaved: true)
         question4 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], needsKeyboard: false, willBeSaved: false)
+        question5 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], needsKeyboard: true, willBeSaved: false)
         
         //Adds questions to questions array
-        questions += [question1,question2,question3,question4]
+        questions += [question1,question2,question3,question4,question5]
         
         
         
@@ -57,23 +57,23 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         output = PaddedLabel(frame:CGRect(x: 10, y: 270, width: screenWidth-20, height: 100))
         output.text = activeQuestion.title
         output.font = UIFont(name: "Menlo-Regular", size: 16)
-        output.textColor = UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 1.0)
+        output.textColor = colour
         output.textAlignment = NSTextAlignment.Left
         output.numberOfLines = 0
-        output.layer.borderColor = (UIColor.greenColor().CGColor)
+        output.layer.borderColor = colour.CGColor
         output.layer.borderWidth = 1.0
         view.addSubview(output)
         
         input = UITextField(frame: CGRect(x: 10, y: 400, width: screenWidth-20, height: 40))
-        input.attributedPlaceholder =  NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 0.7)])
+        input.attributedPlaceholder =  NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
         input.font = UIFont(name: "Menlo-Regular", size: 16)
-        input.textColor = UIColor(red: 77/255, green: 192/255, blue: 86/255, alpha: 1.0)
+        input.textColor = colour
         input.textAlignment = NSTextAlignment.Left
         input.leftView = UIView(frame: CGRectMake(0, 0, 10, 40))
         input.leftViewMode = UITextFieldViewMode.Always
         input.autocapitalizationType = UITextAutocapitalizationType.Sentences
         input.keyboardAppearance = UIKeyboardAppearance.Dark
-        input.layer.borderColor = (UIColor.greenColor().CGColor)
+        input.layer.borderColor = colour.CGColor
         input.layer.borderWidth = 1.0
         input.delegate = self
         view.addSubview(input)
@@ -84,10 +84,10 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         lButton.backgroundColor = UIColor.blackColor()
        // lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
         lButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
-        lButton.setTitleColor(UIColor.greenColor(), forState: UIControlState.Normal)
+        lButton.setTitleColor(colour, forState: UIControlState.Normal)
         lButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
         lButton.layer.borderWidth = 1.0
-        lButton.layer.borderColor = (UIColor.greenColor().CGColor)
+        lButton.layer.borderColor = colour.CGColor
         view.addSubview(lButton)
         lButton.hidden = true
         
@@ -96,14 +96,37 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         rButton.backgroundColor = UIColor.blackColor()
         //rButton.setTitle(question2.acceptedAnswers[1], forState: UIControlState.Normal)
         rButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
-        rButton.setTitleColor(UIColor.greenColor(), forState: UIControlState.Normal)
+        rButton.setTitleColor(colour, forState: UIControlState.Normal)
         rButton.addTarget(self, action: "questionHandler:", forControlEvents: UIControlEvents.TouchUpInside)
         rButton.layer.borderWidth = 1.0
-        rButton.layer.borderColor = (UIColor.greenColor().CGColor)
+        rButton.layer.borderColor = colour.CGColor
         view.addSubview(rButton)
         rButton.hidden = true
         
         buttonArray += [lButton,rButton]
+        
+        colourButton1 = UIButton(frame: CGRect(x: screenWidth-120, y: 15, width: 20, height: 20))
+        colourButton1.backgroundColor = UIColor.redColor()
+        colourButton1.setTitle("R", forState: UIControlState.Normal)
+        colourButton1.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
+        colourButton1.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        colourButton1.addTarget(self, action: "changeColour:", forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(colourButton1)
+        colourButton2 = UIButton(frame: CGRect(x: screenWidth-80, y: 15, width: 20, height: 20))
+        colourButton2.backgroundColor = UIColor.greenColor()
+        colourButton2.setTitle("G", forState: UIControlState.Normal)
+        colourButton2.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
+        colourButton2.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        colourButton2.addTarget(self, action: "changeColour:", forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(colourButton2)
+        colourButton3 = UIButton(frame: CGRect(x: screenWidth-40, y: 15, width: 20, height: 20))
+        colourButton3.backgroundColor = UIColor.blueColor()
+        colourButton3.setTitle("B", forState: UIControlState.Normal)
+        colourButton3.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
+        colourButton3.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        colourButton3.addTarget(self, action: "changeColour:", forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(colourButton3)
+
         
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
@@ -164,7 +187,7 @@ func answersHandler(){
     if activeQuestion.needsKeyboard {
             if  activeQuestion.acceptedAnswers == nil {
                 nameSubmit = true
-            }else {
+            } else {
                 
             }
         
@@ -189,6 +212,35 @@ func textFieldShouldReturn(textField: UITextField) -> Bool { // Handles the user
         }
     }
     return true
+}
+
+func changeColour(sender:UIButton){
+    switch sender {
+        case colourButton1:
+            colour = UIColor.redColor()
+            output.text = "Red Mode Activated"
+            print("R")
+    
+        case colourButton2:
+            colour = UIColor.greenColor()
+            output.text = "Green Mode Activated"
+            print("G")
+            
+        case colourButton3:
+            colour = UIColor.blueColor()
+            output.text = "Blue Mode Activated"
+            print("B")
+        
+        default:
+            colour = UIColor.greenColor()
+    }
+    output.textColor = colour
+    output.layer.borderColor = colour.CGColor
+    input.attributedPlaceholder = NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
+    input.textColor = colour
+    input.layer.borderColor = colour.CGColor
+    lButton.layer.borderColor = colour.CGColor
+    rButton.layer.borderColor = colour.CGColor
 }
     
 //    func textFieldShouldReturn(textField: UITextField) -> Bool {
