@@ -23,6 +23,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var gender:String!
     var homeLocation:CLPlacemark?
     
+    var imageDisplay:UIImageView!
     var input:UITextField!
     var nameSubmit:Bool = false
     var keyboardSubmit:Bool = false
@@ -42,12 +43,12 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         colour = UIColor.greenColor()
         
         //Creates questions
-        question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true)
-        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true)
+        question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true, image: "1.png")
+        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true, image: "2.png")
 //        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
-        question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false)
-        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "Did you know you can change the game's colour?", needsKeyboard: true, willBeSaved: false)
-        question5 = Question(title: "Testing", acceptedAnswers: ["I love bacon","I love bacon"], correctResponce: "Who doesn't?!", needsKeyboard: false, willBeSaved: false)
+        question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false, image: "3.png")
+        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "Did you know you can change the game's colour?", needsKeyboard: true, willBeSaved: false, image: "4.png")
+        question5 = Question(title: "Testing", acceptedAnswers: ["I love bacon","I love bacon"], correctResponce: "Who doesn't?!", needsKeyboard: false, willBeSaved: false, image: "5.png")
         
         //Adds questions to questions array
         questions += [question1,question2,question3,question4,question5]
@@ -56,6 +57,12 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         //activeQuestion = questions[0]
         
         //Draw content+layout
+        
+        imageDisplay = UIImageView(frame:CGRect(x: 10, y: 45, width: screenWidth-20, height: 215))
+        imageDisplay.layer.borderColor = colour.CGColor
+        imageDisplay.layer.borderWidth = 1.0
+        view.addSubview(imageDisplay)
+        
         output = PaddedLabel(frame:CGRect(x: 10, y: 270, width: screenWidth-20, height: 100))
         output.text = activeQuestion.title
         output.font = UIFont(name: "Menlo-Regular", size: 16)
@@ -105,21 +112,21 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         
         buttonArray += [lButton,rButton]
         
-        colourButton1 = UIButton(frame: CGRect(x: screenWidth-120, y: 15, width: 20, height: 20))
+        colourButton1 = UIButton(frame: CGRect(x: screenWidth-110, y: 15, width: 20, height: 20))
         colourButton1.backgroundColor = UIColor.redColor()
         colourButton1.setTitle("R", forState: UIControlState.Normal)
         colourButton1.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         colourButton1.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
         colourButton1.addTarget(self, action: "changeColour:", forControlEvents: UIControlEvents.TouchUpInside)
         view.addSubview(colourButton1)
-        colourButton2 = UIButton(frame: CGRect(x: screenWidth-80, y: 15, width: 20, height: 20))
+        colourButton2 = UIButton(frame: CGRect(x: screenWidth-70, y: 15, width: 20, height: 20))
         colourButton2.backgroundColor = UIColor.greenColor()
         colourButton2.setTitle("G", forState: UIControlState.Normal)
         colourButton2.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         colourButton2.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
         colourButton2.addTarget(self, action: "changeColour:", forControlEvents: UIControlEvents.TouchUpInside)
         view.addSubview(colourButton2)
-        colourButton3 = UIButton(frame: CGRect(x: screenWidth-40, y: 15, width: 20, height: 20))
+        colourButton3 = UIButton(frame: CGRect(x: screenWidth-30, y: 15, width: 20, height: 20))
         colourButton3.backgroundColor = UIColor.blueColor()
         colourButton3.setTitle("B", forState: UIControlState.Normal)
         colourButton3.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
@@ -149,6 +156,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             lButton.hidden = false
             rButton.hidden = false
         }
+        var image = activeQuestion.image
+        imageDisplay.image = UIImage(named: image)
         answersHandler()
     }
  
@@ -174,7 +183,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
                 ac.addAction(UIAlertAction(title: "Reset Question", style: .Default, handler: nil))
                 presentViewController(ac, animated: true, completion: nil)
                 input.text = nil //Clears text field
-            } else if input.text != "" {
+            }
+            else if input.text != "" {
                 name = input.text //Saves the name to var: name
                 question2.title = "Hello, \(name), what's your gender?"
                 print("Name is set to '\(name)'")
@@ -227,7 +237,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             view.endEditing(true)
             lButton.hidden = true
             rButton.hidden = true
-            
             return
         }
         output.text = activeQuestion.title
@@ -238,7 +247,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         switch sender {
             case colourButton1:
                 colour = UIColor.redColor()
-        
             case colourButton2:
                 colour = UIColor.greenColor()
             
@@ -258,7 +266,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         lButton.setTitleColor(colour, forState: UIControlState.Normal)
         rButton.setTitleColor(colour, forState: UIControlState.Normal)
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

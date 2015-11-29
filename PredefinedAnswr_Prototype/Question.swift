@@ -14,14 +14,16 @@ class Question:NSObject {
     var correctResponce: String
     var needsKeyboard: Bool
     var wilBeSaved: Bool
+    var image: String!
     
-    init(title:String, acceptedAnswers:[String]?, correctResponce:String, needsKeyboard: Bool, willBeSaved: Bool) {
+    init(title:String, acceptedAnswers:[String]?, correctResponce:String, needsKeyboard:Bool, willBeSaved:Bool, image:String) {
         
         self.title = title
         self.acceptedAnswers = acceptedAnswers
         self.correctResponce = correctResponce
         self.needsKeyboard = needsKeyboard
         self.wilBeSaved = willBeSaved
+        self.image = image
         super.init()
     }
 }
