@@ -260,6 +260,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         output.layer.borderColor = colour.CGColor
         input.attributedPlaceholder = NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
         input.textColor = colour
+        imageDisplay.layer.borderColor = colour.CGColor
         input.layer.borderColor = colour.CGColor
         lButton.layer.borderColor = colour.CGColor
         rButton.layer.borderColor = colour.CGColor
