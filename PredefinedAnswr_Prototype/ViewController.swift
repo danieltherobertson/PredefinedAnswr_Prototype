@@ -37,18 +37,15 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     var colourButton1:UIButton!; var colourButton2:UIButton!; var colourButton3:UIButton!; var colour:UIColor!
     
     var buttonArray = [UIButton!]()
-    
-    var imageN: String!
-    var imageC: String!
-    var imageT: String!
+
+    var imageC = "green"
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         colour = UIColor.greenColor()
         
-       // imageN = "\(questionIndex+1)"
-        imageC = "green"
-        //imageT = ".png"
+        //imageC = "green"
         
         //Creates questions
         question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true, image: "1_\(imageC).png")
@@ -165,8 +162,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             lButton.hidden = false
             rButton.hidden = false
         }
-        let image = activeQuestion.image
-        imageDisplay.image = UIImage(named: image)
+        activeQuestion.image = "\(questionIndex+1)_\(imageC)"
+        imageDisplay.image = UIImage(named: activeQuestion.image)
+
         answersHandler()
     }
  
@@ -256,12 +254,13 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         switch sender {
             case colourButton1:
                 colour = UIColor.redColor()
+                imageC = "red"
             case colourButton2:
                 colour = UIColor.greenColor()
-            
+                imageC = "green"
             case colourButton3:
                 colour = UIColor.blueColor()
-            
+                imageC = "blue"
             default:
                 colour = UIColor.greenColor()
         }
@@ -275,6 +274,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         rButton.layer.borderColor = colour.CGColor
         lButton.setTitleColor(colour, forState: UIControlState.Normal)
         rButton.setTitleColor(colour, forState: UIControlState.Normal)
+        activeQuestion.image = "\(questionIndex+1)_\(imageC)"
+        imageDisplay.image = UIImage(named: activeQuestion.image)
+        
     }
 
     override func didReceiveMemoryWarning() {
