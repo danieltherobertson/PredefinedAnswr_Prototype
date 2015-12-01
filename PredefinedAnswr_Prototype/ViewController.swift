@@ -21,7 +21,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     var name:String!
     var gender:String!
-    var homeLocation:CLPlacemark?
     
     var imageDisplay:UIImageView!
     var input:UITextField!
@@ -40,17 +39,13 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
 
     var imageC = "green"
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         colour = UIColor.greenColor()
-        
-        //imageC = "green"
-        
+    
         //Creates questions
         question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true, image: "1_\(imageC).png")
         question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true, image: "2_\(imageC).png")
-//        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
         question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false, image: "3_\(imageC).png")
         question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "Did you know you can change the game's colour?", needsKeyboard: true, willBeSaved: false, image: "4__\(imageC).png")
         question5 = Question(title: "Testing", acceptedAnswers: ["I love bacon","I love bacon"], correctResponce: "Who doesn't?!", needsKeyboard: false, willBeSaved: false, image: "5__\(imageC).png")
@@ -95,7 +90,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         
         lButton = UIButton(frame: CGRect(x: 10, y: 400, width: screenWidth/2-15, height: 50))
         lButton.backgroundColor = UIColor.blackColor()
-       // lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
+        //lButton.setTitle(question2.acceptedAnswers[0], forState: UIControlState.Normal)
         lButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         lButton.setTitleColor(colour, forState: UIControlState.Normal)
         lButton.addTarget(self, action: "buttonHandler:", forControlEvents: UIControlEvents.TouchUpInside)
@@ -106,7 +101,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         
         rButton = UIButton(frame: CGRect(x: screenWidth/2+5, y: 400, width: screenWidth/2-15, height: 50))
         rButton.backgroundColor = UIColor.blackColor()
-        //rButton.setTitle(question2.acceptedAnswers[1], forState: UIControlState.Normal)
         rButton.titleLabel!.font = UIFont(name: "Menlo-Bold", size: 16)
         rButton.setTitleColor(colour, forState: UIControlState.Normal)
         rButton.addTarget(self, action: "buttonHandler:", forControlEvents: UIControlEvents.TouchUpInside)
@@ -139,14 +133,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         colourButton3.addTarget(self, action: "changeColour:", forControlEvents: UIControlEvents.TouchUpInside)
         view.addSubview(colourButton3)
 
-        
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.delegate = self
-        locationManager.distanceFilter = 100.0 //Location will only update if they move more than 100 metres
-        locationManager.startUpdatingLocation()
-        
         view.backgroundColor = UIColor.blackColor()
-        
         
         questionHandler(activeQuestion)
     }
@@ -164,7 +151,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         }
         activeQuestion.image = "\(questionIndex+1)_\(imageC)"
         imageDisplay.image = UIImage(named: activeQuestion.image)
-
+        print(activeQuestion.image)
+ 
         answersHandler()
     }
  
@@ -246,6 +234,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             rButton.hidden = true
             return
         }
+        
         output.text = activeQuestion.title
         questionHandler(activeQuestion)
     }
@@ -264,6 +253,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             default:
                 colour = UIColor.greenColor()
         }
+        
         output.textColor = colour
         output.layer.borderColor = colour.CGColor
         input.attributedPlaceholder = NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
@@ -276,7 +266,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         rButton.setTitleColor(colour, forState: UIControlState.Normal)
         activeQuestion.image = "\(questionIndex+1)_\(imageC)"
         imageDisplay.image = UIImage(named: activeQuestion.image)
-        
+        print(activeQuestion.image)
     }
 
     override func didReceiveMemoryWarning() {
