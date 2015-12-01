@@ -38,17 +38,25 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     var buttonArray = [UIButton!]()
     
+    var imageN: String!
+    var imageC: String!
+    var imageT: String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         colour = UIColor.greenColor()
         
+       // imageN = "\(questionIndex+1)"
+        imageC = "green"
+        //imageT = ".png"
+        
         //Creates questions
-        question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true, image: "1_green.png")
-        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true, image: "2_green.png")
+        question1 = Question(title: "What's your name?", acceptedAnswers:nil, correctResponce: "Name has been saved", needsKeyboard: true, willBeSaved: true, image: "1_\(imageC).png")
+        question2 = Question(title: "Hello, \(name), what's your gender?", acceptedAnswers: ["Male","Female"], correctResponce: "Gender saved as \(gender)", needsKeyboard: false, willBeSaved: true, image: "2_\(imageC).png")
 //        question3 = Question(title: "Is your current location your home?", acceptedAnswers: ["Yes","No"], correctResponce: "Home location saved as \(homeLocation)", needsKeyboard: false, willBeSaved: true)
-        question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false, image: "3_green.png")
-        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "Did you know you can change the game's colour?", needsKeyboard: true, willBeSaved: false, image: "4_green.png")
-        question5 = Question(title: "Testing", acceptedAnswers: ["I love bacon","I love bacon"], correctResponce: "Who doesn't?!", needsKeyboard: false, willBeSaved: false, image: "5_green.png")
+        question3 = Question(title: "Left or right?", acceptedAnswers: ["Left","Right"], correctResponce: "As I thought, good choice.", needsKeyboard: false, willBeSaved: false, image: "3_\(imageC).png")
+        question4 = Question(title: "Red, Green or Blue?", acceptedAnswers: ["Red", "Green", "Blue"], correctResponce: "Did you know you can change the game's colour?", needsKeyboard: true, willBeSaved: false, image: "4__\(imageC).png")
+        question5 = Question(title: "Testing", acceptedAnswers: ["I love bacon","I love bacon"], correctResponce: "Who doesn't?!", needsKeyboard: false, willBeSaved: false, image: "5__\(imageC).png")
         
         //Adds questions to questions array
         questions += [question1,question2,question3,question4,question5]
@@ -141,6 +149,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         locationManager.startUpdatingLocation()
         
         view.backgroundColor = UIColor.blackColor()
+        
         
         questionHandler(activeQuestion)
     }
