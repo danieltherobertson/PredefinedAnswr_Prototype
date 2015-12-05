@@ -53,9 +53,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         //Adds questions to questions array
         questions += [question1,question2,question3,question4,question5]
         
-        //Sets default active question to Q1
-        //activeQuestion = questions[0]
-        
         //Draw content+layout
         
         imageDisplay = UIImageView(frame:CGRect(x: 10, y: 45, width: screenWidth-20, height: 215))
@@ -74,7 +71,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         view.addSubview(output)
         
         input = UITextField(frame: CGRect(x: 10, y: 400, width: screenWidth-20, height: 40))
-        input.attributedPlaceholder =  NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
+        input.attributedPlaceholder =  NSAttributedString(string: "Type here", attributes: [NSForegroundColorAttributeName:colour])
         input.font = UIFont(name: "Menlo-Regular", size: 16)
         input.textColor = colour
         input.textAlignment = NSTextAlignment.Left
@@ -234,7 +231,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             rButton.hidden = true
             return
         }
-        
+        view.endEditing(true)
         output.text = activeQuestion.title
         questionHandler(activeQuestion)
     }
@@ -256,7 +253,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         
         output.textColor = colour
         output.layer.borderColor = colour.CGColor
-        input.attributedPlaceholder = NSAttributedString(string: "Type shit here", attributes: [NSForegroundColorAttributeName:colour])
+        input.attributedPlaceholder = NSAttributedString(string: "Type here", attributes: [NSForegroundColorAttributeName:colour])
         input.textColor = colour
         imageDisplay.layer.borderColor = colour.CGColor
         input.layer.borderColor = colour.CGColor
