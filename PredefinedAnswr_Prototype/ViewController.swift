@@ -147,9 +147,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             rButton.hidden = false
         }
         activeQuestion.image = "\(questionIndex+1)_\(imageC)"
-        imageDisplay.image = UIImage(named: activeQuestion.image)
-        print(activeQuestion.image)
- 
+        imageDisplay.image = UIImage(named: activeQuestion.image) 
         answersHandler()
     }
  
@@ -263,7 +261,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         rButton.setTitleColor(colour, forState: UIControlState.Normal)
         activeQuestion.image = "\(questionIndex+1)_\(imageC)"
         imageDisplay.image = UIImage(named: activeQuestion.image)
-        print(activeQuestion.image)
     }
 
     override func didReceiveMemoryWarning() {
